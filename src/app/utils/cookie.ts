@@ -12,7 +12,7 @@ const clearCookie = (res : Response, key : string, options : CookieOptions) => {
   res.clearCookie(key, options);
 }
 
-export const cookieHelper = {
+export const cookieUtils = {
   setCookie,
   getCookie,
   clearCookie

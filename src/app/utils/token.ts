@@ -26,13 +26,37 @@ const getRefreshToken = (payload : JwtPayload) => {
 const setAccessToken = (res : Response, token : string) => {
   cookieUtils.setCookie(res, "accessToken", token, {
     httpOnly : true,
-    secure : envVars.NODE_ENV === "production",
+    secure : true,
     sameSite : "none",
-    maxAge : 1000 * 60 * 60 * 24 // 1 day
+    path : "/",
+    maxAge : 60 * 60 * 60 * 24 // 1 day
+  })
+}
+
+const setRefreshToken = (res : Response, token : string) => {
+  cookieUtils.setCookie(res, "refreshToken", token, {
+    httpOnly : true,
+    secure : true,
+    sameSite : "none",
+    path : "/",
+    maxAge : 60 * 60 * 60 * 24 * 7 
+  })
+}
+
+const setBetterAuthSessionCookie = (res : Response, token : string) => {
+  cookieUtils.setCookie(res, "better-auth.session_token", token, {
+    httpOnly : true,
+    secure : true,
+    sameSite : "none",
+    path : "/",
+    maxAge : 60 * 60 * 60 * 24 // 1 day
   })
 }
 
 export const tokenUtils = {
   getAccessToken,
-  getRefreshToken
+  getRefreshToken,
+  setAccessToken,
+  setRefreshToken,
+  setBetterAuthSessionCookie
 }

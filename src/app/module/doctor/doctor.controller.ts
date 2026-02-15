@@ -30,7 +30,22 @@ const getDoctorById = catchAsync(
   }
 )
 
+const updateDoctor = catchAsync(
+  async ( req : Request, res : Response ) => {
+    const doctorId = req.params.id;
+    const payload = req.body;
+    const result = await doctorService.updateDoctor(doctorId as string, payload);
+    sendResponse(res, {
+      httpStatusCode : status.OK,
+      success : true,
+      message : "Doctor updated successfully",
+      data : result
+    })
+  }
+)
+
 export const doctorController = {
   getAllDoctors,
-  getDoctorById
+  getDoctorById,
+  updateDoctor
 }
