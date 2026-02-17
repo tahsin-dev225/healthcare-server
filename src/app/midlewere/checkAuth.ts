@@ -4,9 +4,12 @@ import { cookieUtils } from "../utils/cookie";
 import { prisma } from "../lib/prisma";
 import AppError from "../errorHalpers/AppError";
 import status from "http-status";
+import { jwtUtils } from "../utils/jwt";
+import { envVars } from "../../config/env";
 
 export const checkAuth = (...authRoles : Role[]) => async (req :Request, res : Response, next : NextFunction) =>{
   try {
+    // session token verification
     const sessionToken = cookieUtils.getCookie(req, "better-auth.session-token")
 
     if(!sessionToken){
@@ -55,10 +58,34 @@ export const checkAuth = (...authRoles : Role[]) => async (req :Request, res : R
         if(authRoles.length > 0 && !authRoles.includes(user.role)){
           throw new AppError(status.FORBIDDEN, "You do not have permission to access this resource");
         }
-
-        return next();
       }
+
+      const accessToken = cookieUtils.getCookie(req, "accessToken");
+
+      if(!accessToken){
+        throw new AppError(status.UNAUTHORIZED, "Access token is missing");
+      }
+
     }
+
+    // access token verification
+    const accessToken = cookieUtils.getCookie(req, "accessToken");
+
+    if(!accessToken){
+      throw new AppError(status.UNAUTHORIZED, "Access token is missing");
+    }
+
+    const verifiedToken = jwtUtils.verifyToken(accessToken, envVars.ACCESS_TOKEN_SECRET);
+
+    if(!verifiedToken){
+      throw new AppError(status.UNAUTHORIZED, "Invalid access token");
+    }
+
+    if(authRoles.length > 0 && !authRoles.includes(verifiedToken.data!.role as Role)){
+      throw new AppError(status.FORBIDDEN, "You do not have permission to access this resource");
+    }
+
+    next();
   } catch (error) {
     next(error);
   }

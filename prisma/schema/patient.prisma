@@ -11,8 +11,13 @@ model Patient {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String             @unique
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicalReports    MedicalReport[]
+  appointments      Appointment[]
+  patientHealthData PatientHealthData?
+  prescriptions     Prescription[]
+  reviews           Review[]
 
   @@index([email], name: "idx_patient_email")
   @@index([isDeleted], name: "idx_patient_isDeleted")
