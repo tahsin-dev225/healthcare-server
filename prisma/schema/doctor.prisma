@@ -27,9 +27,6 @@ model Doctor {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   specialties     DoctorSpecialty[]
-  // appointments    Appointment[]
-  // prescriptions   Prescription[]
-  // reviews         Review[]
   doctorSchedules DoctorSchedules[]
   appointments    Appointment[]
   prescriptions   Prescription[]

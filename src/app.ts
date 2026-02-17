@@ -7,6 +7,7 @@ import { userRouter } from "./app/module/user/user.route";
 import { doctorRouter } from "./app/module/doctor/doctor.route";
 import AppError from "./app/errorHalpers/AppError";
 import status from "http-status";
+import { adminRouter } from "./app/module/admin/admin.route";
 
 const app : Application = express()
 
@@ -20,6 +21,7 @@ app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/specialties", specialtyRouter)
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/doctors", doctorRouter)
+app.use("/api/v1/admins", adminRouter)
 
 // Basic route
 app.get('/', async (req : Request, res : Response) => {

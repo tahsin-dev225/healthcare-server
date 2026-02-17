@@ -8,5 +8,9 @@ router.get('/', doctorController.getAllDoctors);
 
 router.get('/:id', doctorController.getDoctorById);
 
+router.patch('/:id', doctorController.updateDoctor);
+
+router.delete('/:id', doctorController.deleteDoctor);
+
 
 export const doctorRouter = router;

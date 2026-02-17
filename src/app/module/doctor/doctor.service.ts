@@ -1,5 +1,7 @@
+
 import { prisma } from "../../lib/prisma";
 import { IDoctorUpdatePayload } from "./doctorInterface";
+import { UserStatus } from "../../../generated/prisma/enums";
 
 const getAllDoctors = async () => {
     const doctors = await prisma.doctor.findMany({
@@ -30,7 +32,20 @@ const getDoctorById = async (id : string,) => {
                 include: {
                     specialty: true
                 }
-            }
+            },
+            appointments : {
+                include : {
+                    patient : true,
+                    schedule : true,
+                    prescription : true
+                }
+             }, 
+            doctorSchedules : {
+                include : {
+                    schedule : true
+                }
+             },
+             reviews : true
         }
     })
     return doctor;
@@ -97,8 +112,60 @@ const updateDoctor = async (id : string, payload : IDoctorUpdatePayload) => {
     return doctor;
 }
 
+const deleteDoctor = async (id : string) => {
+    const isDoctorExist = await prisma.doctor.findFirst({
+      where : {
+            id,
+            isDeleted : false
+        }
+    })
+
+    if (!isDoctorExist) {
+        throw new Error("Doctor not found");
+    }
+
+    await prisma.$transaction(async(tx)=> {
+        await tx.doctor.update({
+            where : {
+                id
+            },
+            data : {
+                isDeleted : true,
+                deletedAt : new Date()
+            }
+        })
+
+        await tx.user.update({
+            where : {
+                id : isDoctorExist.userId
+            },
+            data : {
+                isDeleted : true,
+                deletedAt : new Date(),
+                status : UserStatus.DELETED
+            }
+        })
+
+        await tx.session.deleteMany({
+            where : {
+                userId : isDoctorExist.userId
+            }
+        })
+
+        await tx.doctorSpecialty.deleteMany({
+            where : {
+                doctorId : id
+            }
+        })
+    })
+
+
+    return {message : "Doctor deleted successfully"};
+}
+
 export const doctorService = {
     getAllDoctors,
     getDoctorById,
-    updateDoctor
+    updateDoctor,
+    deleteDoctor
 }
