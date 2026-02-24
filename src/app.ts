@@ -8,14 +8,24 @@ import { doctorRouter } from "./app/module/doctor/doctor.route";
 import AppError from "./app/errorHalpers/AppError";
 import status from "http-status";
 import { adminRouter } from "./app/module/admin/admin.route";
+import cookieParser from "cookie-parser";
+import { toNodeHandler } from "better-auth/node";
+import auth from "./app/lib/auth";
+import path from "path";
 
 const app : Application = express()
+
+app.set("view engine", "ejs");
+app.set("views", path.resolve(process.cwd(), `src/app/templets`))
+
+app.use("/api/auth", toNodeHandler(auth))
 
 // Enable URL-encoded form data parsing
 app.use(express.urlencoded({ extended: true }));
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(cookieParser())
 
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/specialties", specialtyRouter)

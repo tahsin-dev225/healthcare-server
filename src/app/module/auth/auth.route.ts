@@ -1,13 +1,48 @@
 import { Router } from "express";
 import { authController } from "./auth.controller";
+import { checkAuth } from "../../midlewere/checkAuth";
+import { Role } from "../../../generated/prisma/browser";
 
 const router = Router();
 
-router.post('/register', authController.registerPatient);
-router.post('/login', authController.loginUser);
+router.post('/register',
+  authController.registerPatient
+);
+router.post('/login', 
+  authController.loginUser
+);
 
-// router.get('/', );
+router.get('/me',
+  checkAuth(Role.ADMIN,Role.DOCTOR, Role.PAITENT, Role.SUPER_ADMIN),
+   authController.getMe
+);
 
-// router.delete('/:id', );
+router.post('/refresh-token', 
+  authController.getNewToken
+);
+
+router.post('/change-password',
+  checkAuth(Role.ADMIN,Role.DOCTOR, Role.PAITENT, Role.SUPER_ADMIN),
+  authController.changePassword);
+
+router.post('/logout',
+  checkAuth(Role.ADMIN,Role.DOCTOR, Role.PAITENT, Role.SUPER_ADMIN),
+  authController.logOutUser
+)
+
+router.post("/verify-email", authController.verifyEmail);
+
+router.post("/forget-password",
+  authController.forgetPassword
+);
+
+router.post("/reset-password", 
+  authController.resetPassword
+);
+
+router.get("/login/google", authController.googleLogin);
+router.get("/google/sucess", authController.googleLoginSuccess);
+router.get("/oauth/error", authController.handleOAuthError)
+
 
 export const authRouter = router;

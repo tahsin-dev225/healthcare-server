@@ -29,28 +29,30 @@ const setAccessToken = (res : Response, token : string) => {
     secure : true,
     sameSite : "none",
     path : "/",
-    maxAge : 60 * 60 * 60 * 24 // 1 day
+    maxAge : 60 * 60 * 24 * 1000, // 1 day
   })
 }
 
-const setRefreshToken = (res : Response, token : string) => {
-  cookieUtils.setCookie(res, "refreshToken", token, {
-    httpOnly : true,
-    secure : true,
-    sameSite : "none",
-    path : "/",
-    maxAge : 60 * 60 * 60 * 24 * 7 
-  })
+const setRefreshToken = (res: Response, token: string) => {
+    cookieUtils.setCookie(res, 'refreshToken', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: '/',
+        //7d
+        maxAge: 60 * 60 * 24 * 1000 * 7,
+    });
 }
 
-const setBetterAuthSessionCookie = (res : Response, token : string) => {
-  cookieUtils.setCookie(res, "better-auth.session_token", token, {
-    httpOnly : true,
-    secure : true,
-    sameSite : "none",
-    path : "/",
-    maxAge : 60 * 60 * 60 * 24 // 1 day
-  })
+const setBetterAuthSessionCookie = (res: Response, token: string) => {
+    cookieUtils.setCookie(res, "better-auth.session_token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: '/',
+        //1 day
+        maxAge: 60 * 60 * 24 * 1000,
+    });
 }
 
 export const tokenUtils = {

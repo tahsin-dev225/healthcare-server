@@ -10,7 +10,7 @@ import { envVars } from "../../config/env";
 export const checkAuth = (...authRoles : Role[]) => async (req :Request, res : Response, next : NextFunction) =>{
   try {
     // session token verification
-    const sessionToken = cookieUtils.getCookie(req, "better-auth.session-token")
+    const sessionToken = cookieUtils.getCookie(req, "better-auth.session_token")
 
     if(!sessionToken){
       throw new Error("Unauthorized, no session token provided");
@@ -57,6 +57,12 @@ export const checkAuth = (...authRoles : Role[]) => async (req :Request, res : R
 
         if(authRoles.length > 0 && !authRoles.includes(user.role)){
           throw new AppError(status.FORBIDDEN, "You do not have permission to access this resource");
+        }
+
+        req.user = {
+          userId : user.id,
+          email : user.email,
+          role : user.role
         }
       }
 

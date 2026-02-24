@@ -3,6 +3,7 @@
 // update admin
 // delete admin (soft delete)
 
+import { IRequestUser } from "../../interfaces/requestUser.interface";
 import { prisma } from "../../lib/prisma"
 import { IUpdateAdminPayload } from "./admin.interface";
 
@@ -58,7 +59,7 @@ const updateAdmin = async ( id : string, payload : IUpdateAdminPayload ) => {
   return updatedAdmin;
 }
 
-const deleteAdmin = async ( id : string ) => {
+const deleteAdmin = async ( id : string, user : IRequestUser ) => {
     const isAdminExist = await prisma.admin.findFirst({
         where : {
             id,
@@ -69,6 +70,10 @@ const deleteAdmin = async ( id : string ) => {
     if(!isAdminExist){
         throw new Error("Admin not found");
     }
+
+    if(isAdminExist.userId === user.userId){
+        throw new Error("You cannot delete your own admin account");
+    };
 
     const deletedAdmin = await prisma.admin.update({
         where : {
