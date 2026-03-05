@@ -8,6 +8,8 @@ const createDoctor = catchAsync(
   async ( req : Request, res : Response ) => {
     const payload = req.body;
 
+    console.log('doctor', payload);
+
     const result = await userService.createDoctor(payload);
 
     sendResponse(res, {

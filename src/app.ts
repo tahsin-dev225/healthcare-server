@@ -12,11 +12,24 @@ import cookieParser from "cookie-parser";
 import { toNodeHandler } from "better-auth/node";
 import auth from "./app/lib/auth";
 import path from "path";
+import cors from "cors";
+import { envVars } from "./config/env";
+import qs from "qs";
+import { IndexRoutes } from "./app/routes";
 
-const app : Application = express()
+const app: Application = express()
+app.set("query parser", (str: string) => qs.parse(str))
+
 
 app.set("view engine", "ejs");
-app.set("views", path.resolve(process.cwd(), `src/app/templets`))
+app.set("views", path.resolve(process.cwd(), `src/app/templets`));
+
+app.use(cors({
+  origin: [envVars.FRONTEND_URL, envVars.BETTER_AUTH_URL, "http://localhost:3000"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 app.use("/api/auth", toNodeHandler(auth))
 
@@ -26,17 +39,14 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use(cookieParser())
+app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/v1/auth", authRouter)
-app.use("/api/v1/specialties", specialtyRouter)
-app.use("/api/v1/users", userRouter)
-app.use("/api/v1/doctors", doctorRouter)
-app.use("/api/v1/admins", adminRouter)
+app.use('/api/v1', IndexRoutes)
 
 // Basic route
-app.get('/', async (req : Request, res : Response) => {
+app.get('/', async (req: Request, res: Response) => {
 
-  throw new AppError(status.BAD_REQUEST,"This is a test error from root route.")
+  throw new AppError(status.BAD_REQUEST, "This is a test error from root route.")
   res.send('Hello, World!');
 });
 

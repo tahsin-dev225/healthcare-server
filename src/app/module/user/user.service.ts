@@ -120,6 +120,7 @@ const createDoctor = async (payload : ICreateDoctorPayload) => {
         id : userData.user.id
       }
     })
+    throw new AppError(status.INTERNAL_SERVER_ERROR,"Failed to create doctor. Please try again.")
   }
 
 }

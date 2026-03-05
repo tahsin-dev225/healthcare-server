@@ -41,7 +41,7 @@ router.post("/reset-password",
 );
 
 router.get("/login/google", authController.googleLogin);
-router.get("/google/sucess", authController.googleLoginSuccess);
+router.get("/google/success", authController.googleLoginSuccess);
 router.get("/oauth/error", authController.handleOAuthError)
 
 

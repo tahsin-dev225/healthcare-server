@@ -192,22 +192,25 @@ const resetPassword = catchAsync(
   }
 )
 
-const googleLogin = catchAsync((req : Request, res : Response) => {
-  const redirectPath = req.query.redirect || "/dashboard";
+const googleLogin = catchAsync((req: Request, res: Response) => {
+    const redirectPath = req.query.redirect || "/dashboard";
 
-  const encodedRedirectPath = encodeURIComponent(redirectPath as string);
+    const encodedRedirectPath = encodeURIComponent(redirectPath as string);
 
-  const callbackURL = `${envVars.BETTER_AUTH_URL}/api/auth/google/sucess?redirect=${encodedRedirectPath}`;
+    const callbackURL = `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success?redirect=${encodedRedirectPath}`;
 
-  res.render("googleRedirect", {
-    callbackURL,
-    betterAuthUrl : envVars.BETTER_AUTH_URL
-  })
+    res.render("googleRedirect", {
+        callbackURL ,
+        betterAuthUrl : envVars.BETTER_AUTH_URL,
+    })
 })
+//  Google Sign-In Redirect... http://localhost:5000 http://localhost:5000/api/v1/auth/google/success?redirect=%2Fdashboard
+// chext_driver.js:539 Initialized driver at: Tue Feb 24 2026 21:17:07 GMT+0600 (Bangladesh Standard Time)
+// chext_loader.js:73 Initialized chextloader at: 1771946227965
 
 const googleLoginSuccess = catchAsync(async (req : Request, res : Response) => {
   const redirectPath = req.query.redirect as string || "/dashboard";
-
+console.log('redirect path from google login success', redirectPath);
   const sessionToken = req.cookies["better-auth.session_token"];
 
   if(!sessionToken){
@@ -231,6 +234,8 @@ const googleLoginSuccess = catchAsync(async (req : Request, res : Response) => {
   const result = await authService.googleLoginSuccess(session);
 
   const { accessToken, refreshToken } = result;
+
+  console.log('acess refrsh auth-cntlr 235');
 
   tokenUtils.setAccessToken(res, accessToken);
   tokenUtils.setRefreshToken(res, refreshToken);
